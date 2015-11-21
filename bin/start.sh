@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+cd "$(dirname $0)/.."
+
+source .env
+
+IMAGE_NAME="gamecreditsfoundation/gamecredits-electrum-docker"
+CONTAINER_NAME="gamecredits-electrum"
+GAMECREDITSD_NODE_CONTAINER_NAME="gamecreditsd"
+
+START="\
+	docker run -it
+		--link $GAMECREDITSD_NODE_CONTAINER_NAME \
+		-e GAMECREDITSD_HOST_IP=$GAMECREDITSD_HOST_IP \
+		-e GAMECREDITSD_HOST_RPC_PORT=$GAMECREDITSD_HOST_RPC_PORT \
+		-e GAMECREDITSD_RPC_USER=$GAMECREDITSD_RPC_USER \
+		-e GAMECREDITSD_RPC_PASSWORD=$GAMECREDITSD_RPC_PASSWORD \
+		-e ELECTRUM_TCP_PORT=$ELECTRUM_TCP_PORT \
+		-p $ELECTRUM_TCP_PORT:$ELECTRUM_TCP_PORT \
+		-d --name=$CONTAINER_NAME \
+		"
+
+set -x
+exec $START $IMAGE_NAME $@
